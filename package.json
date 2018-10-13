@@ -1,0 +1,26 @@
+{
+  "name": "exemplewebsocketnodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "chat-server.js",
+  "engines": {
+    "node": "8.12.0"
+  },
+  "dependencies": {
+    "websocket": "^1.0.28"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yacinezr/exemplenodewebsocket.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yacinezr/exemplenodewebsocket/issues"
+  },
+  "homepage": "https://github.com/yacinezr/exemplenodewebsocket#readme"
+}
