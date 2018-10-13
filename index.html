@@ -50,10 +50,10 @@
                 }
 
                 // open connection
-                alert(window.location.origin)
 
                 var wsUrl = window.location.origin.replace("https://", "ws://");
-                wsUrl = window.location.origin.replace("http://", "ws://");
+//                wsUrl = window.location.origin.replace("http://", "ws://");
+                alert(wsUrl)
 
 
                 var connection = new WebSocket(wsUrl);
