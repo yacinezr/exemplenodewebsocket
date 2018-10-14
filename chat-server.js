@@ -123,5 +123,4 @@ wsServer.on('request', function (request) {
             colors.push(userColor);
         }
     });
-
 });
