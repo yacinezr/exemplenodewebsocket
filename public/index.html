@@ -54,6 +54,7 @@
     <span id="status">Connecting...</span>
     <input type="text" id="input" disabled="disabled"/>
 </div>
+<p></p>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
@@ -93,7 +94,6 @@
         } else {
             wsUrl = window.location.origin.replace("http://", "ws://");
         }
-        alert(wsUrl);
 
 
         var connection = new WebSocket(wsUrl);
@@ -107,8 +107,7 @@
         connection.onerror = function (error) {
             // just in there were some problems with conenction...
             content.html($('<p>', {
-                text: 'Sorry, but there\'s some problem with your '
-                + 'connection or the server is down.'
+                text: 'Sorry, but there\'s some problem with your connection or the server is down.'
             }));
         };
 
