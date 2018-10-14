@@ -7,81 +7,45 @@ process.title = 'node-chat';
 // Port where we'll run the websocket server
 var webSocketsServerPort = process.env.PORT || 5000;
 
+var express = require('express');
+var app = express();
+
 // websocket and http servers
 var webSocketServer = require('websocket').server;
-var http = require('http');
-var fs = require('fs');
-var html = fs.readFileSync('index.html');
-var js = fs.readFileSync('frontend.js');
 
 
 /**
  * Global variables
  */
 // latest 100 messages
-var history = [ ];
+var history = [];
 // list of currently connected clients (users)
-var clients = [ ];
+var clients = [];
 
 /**
  * Helper function for escaping input strings
  */
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
-                      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 
-
-
-
-
-
-
 // Array with some colors
-var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange' ];
+var colors = ['red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange'];
 // ... in random order
 // colors.sort(function(a,b) { return Math.random() > 0.5; } );
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**
  * HTTP server
  */
-var server = http.createServer(function(request, response) {
-    // Not important for us. We're writing WebSocket server, not HTTP server
-    response.writeHead(200, {'Content-Type': 'text/html'});
-    response.end(html);
-});
-server.listen(webSocketsServerPort, function() {
-    console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
+var server = app.listen(webSocketsServerPort, function () {
+    console.log('listening to requests on port '+webSocketsServerPort)
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Serving static files
+app.use(express.static('public'));
 
 /**
  * WebSocket server
@@ -94,13 +58,13 @@ var wsServer = new webSocketServer({
 
 // This callback function is called every time someone
 // tries to connect to the WebSocket server
-wsServer.on('request', function(request) {
+wsServer.on('request', function (request) {
     console.log((new Date()) + ' Connection from origin ' + request.origin + '.');
 
     // accept connection - you should check 'request.origin' to make sure that
     // client is connecting from your website
     // (http://en.wikipedia.org/wiki/Same_origin_policy)
-    var connection = request.accept(null, request.origin); 
+    var connection = request.accept(null, request.origin);
     // we need to know client index to remove them on 'close' event
     var index = clients.push(connection) - 1;
     var userName = false;
@@ -110,25 +74,25 @@ wsServer.on('request', function(request) {
 
     // send back chat history
     if (history.length > 0) {
-        connection.sendUTF(JSON.stringify( { type: 'history', data: history} ));
+        connection.sendUTF(JSON.stringify({type: 'history', data: history}));
     }
 
     // user sent some message
-    connection.on('message', function(message) {
+    connection.on('message', function (message) {
         if (message.type === 'utf8') { // accept only text
             if (userName === false) { // first message sent by user is their name
                 // remember user name
                 userName = htmlEntities(message.utf8Data);
                 // get random color and send it back to the user
                 userColor = colors.shift();
-                connection.sendUTF(JSON.stringify({ type:'color', data: userColor }));
+                connection.sendUTF(JSON.stringify({type: 'color', data: userColor}));
                 console.log((new Date()) + ' User is known as: ' + userName
-                            + ' with ' + userColor + ' color.');
+                    + ' with ' + userColor + ' color.');
 
             } else { // log and broadcast the message
                 console.log((new Date()) + ' Received Message from '
-                            + userName + ': ' + message.utf8Data);
-                
+                    + userName + ': ' + message.utf8Data);
+
                 // we want to keep history of all sent messages
                 var obj = {
                     time: (new Date()).getTime(),
@@ -140,8 +104,8 @@ wsServer.on('request', function(request) {
                 history = history.slice(-100);
 
                 // broadcast message to all connected clients
-                var json = JSON.stringify({ type:'message', data: obj });
-                for (var i=0; i < clients.length; i++) {
+                var json = JSON.stringify({type: 'message', data: obj});
+                for (var i = 0; i < clients.length; i++) {
                     clients[i].sendUTF(json);
                 }
             }
@@ -149,7 +113,7 @@ wsServer.on('request', function(request) {
     });
 
     // user disconnected
-    connection.on('close', function(connection) {
+    connection.on('close', function (connection) {
         if (userName !== false && userColor !== false) {
             console.log((new Date()) + " Peer "
                 + connection.remoteAddress + " disconnected.");
